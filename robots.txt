@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://askl123.github.io/sitemap.xml
