@@ -2,23 +2,13 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Askl</title>
-    <link>https://askl123.github.io/</link>
+    <link>http://localhost:1313/</link>
     <description>Recent content on Askl</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 10 Aug 2020 18:02:07 +0800</lastBuildDate>
     
-	<atom:link href="https://askl123.github.io/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>Test</title>
-      <link>https://askl123.github.io/post/test/</link>
-      <pubDate>Mon, 10 Aug 2020 18:02:07 +0800</pubDate>
-      
-      <guid>https://askl123.github.io/post/test/</guid>
-      <description>hello this is a test markdown another try </description>
-    </item>
     
   </channel>
 </rss>
