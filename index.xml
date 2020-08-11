@@ -6,10 +6,19 @@
     <description>Recent content on Askl</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 10 Aug 2020 19:06:45 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 11 Aug 2020 11:40:02 +0800</lastBuildDate>
     
 	<atom:link href="https://askl123.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Try_about_me</title>
+      <link>https://askl123.github.io/post/try/</link>
+      <pubDate>Tue, 11 Aug 2020 11:40:02 +0800</pubDate>
+      
+      <guid>https://askl123.github.io/post/try/</guid>
+      <description>About me 22年硕士毕业，非科班。 以后未知。</description>
+    </item>
     
     <item>
       <title>操作指南</title>
