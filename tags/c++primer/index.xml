@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>C&#43;&#43;Primer on Askl</title>
+    <link>http://localhost:1313/tags/c&#43;&#43;primer/</link>
+    <description>Recent content in C&#43;&#43;Primer on Askl</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 11 Aug 2020 12:13:43 +0800</lastBuildDate>
+    
+	<atom:link href="http://localhost:1313/tags/c++primer/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>C&#43;&#43;Primer 第一章</title>
+      <link>http://localhost:1313/post/cpp/1/</link>
+      <pubDate>Tue, 11 Aug 2020 12:13:43 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/cpp/1/</guid>
+      <description>C++Primer 第一章</description>
+    </item>
+    
+  </channel>
+</rss>
