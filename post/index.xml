@@ -6,7 +6,7 @@
     <description>Recent content in Posts on Askl</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 11 Aug 2020 11:56:35 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 11 Aug 2020 12:13:50 +0800</lastBuildDate>
     
 	<atom:link href="http://localhost:1313/post/index.xml" rel="self" type="application/rss+xml" />
     
@@ -18,6 +18,24 @@
       
       <guid>http://localhost:1313/post/bloglist/</guid>
       <description>汇总 暂无内容 尝试置顶</description>
+    </item>
+    
+    <item>
+      <title>C&#43;&#43;Primer 第二章</title>
+      <link>http://localhost:1313/post/cpp/2/</link>
+      <pubDate>Tue, 11 Aug 2020 12:13:50 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/cpp/2/</guid>
+      <description>C++Primer 第二章</description>
+    </item>
+    
+    <item>
+      <title>C&#43;&#43;Primer 第一章</title>
+      <link>http://localhost:1313/post/cpp/1/</link>
+      <pubDate>Tue, 11 Aug 2020 12:13:43 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/cpp/1/</guid>
+      <description>C++Primer 第一章</description>
     </item>
     
     <item>
