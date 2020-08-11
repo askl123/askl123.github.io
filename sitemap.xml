@@ -9,6 +9,13 @@
   </url>
   
   <url>
+    <loc>https://askl123.github.io/categories/</loc>
+    <lastmod>2020-08-10T19:06:45+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://askl123.github.io/post/</loc>
     <lastmod>2020-08-10T19:06:45+08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -16,27 +23,29 @@
   </url>
   
   <url>
-    <loc>https://askl123.github.io/post/test2/</loc>
+    <loc>https://askl123.github.io/tags/</loc>
     <lastmod>2020-08-10T19:06:45+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://askl123.github.io/post/test/</loc>
-    <lastmod>2020-08-10T18:02:07+08:00</lastmod>
+    <loc>https://askl123.github.io/tags/%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8D%97/</loc>
+    <lastmod>2020-08-10T19:06:45+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://askl123.github.io/categories/</loc>
+    <loc>https://askl123.github.io/categories/%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8D%97/</loc>
+    <lastmod>2020-08-10T19:06:45+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://askl123.github.io/tags/</loc>
+    <loc>https://askl123.github.io/post/implement/</loc>
+    <lastmod>2020-08-10T19:06:45+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
