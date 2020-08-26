@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>6.828 on Askl</title>
+    <link>http://localhost:1313/tags/6.828/</link>
+    <description>Recent content in 6.828 on Askl</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 26 Aug 2020 17:06:12 +0800</lastBuildDate>
+    
+	<atom:link href="http://localhost:1313/tags/6.828/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Prepare</title>
+      <link>http://localhost:1313/post/6.828/prepare/</link>
+      <pubDate>Wed, 26 Aug 2020 17:06:12 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/6.828/prepare/</guid>
+      <description>MIT 6.828 2018 准备阶段指南 MIT 6.828是操作系统中最经典的一门课程。完成所有的lab就相当于完成了一个迷你的操作系统。由于2019年的课程引入了6.</description>
+    </item>
+    
+  </channel>
+</rss>
