@@ -49,7 +49,7 @@
 <meta itemprop="description" content="MIT 6.828 2018 准备阶段指南 MIT 6.828是操作系统中最经典的一门课程。完成所有的lab就相当于完成了一个迷你的操作系统。由于2019年的课程引入了6.">
 <meta itemprop="datePublished" content="2020-08-26T17:06:12&#43;08:00" />
 <meta itemprop="dateModified" content="2020-08-26T17:06:12&#43;08:00" />
-<meta itemprop="wordCount" content="289">
+<meta itemprop="wordCount" content="383">
 
 
 
@@ -144,6 +144,7 @@
         <li><a href="#实验代码克隆">实验代码克隆</a></li>
         <li><a href="#编译工具链">编译工具链</a></li>
         <li><a href="#qemu模拟器安装">QEMU模拟器安装</a></li>
+        <li><a href="#测试">测试</a></li>
       </ul>
     </li>
   </ul>
@@ -152,22 +153,31 @@
 </div>
     <div class="post-content">
       <h1 id="mit-6828-2018-准备阶段指南">MIT 6.828 2018 准备阶段指南</h1>
-<p>MIT 6.828是操作系统中最经典的一门课程。完成所有的lab就相当于完成了一个迷你的操作系统。由于2019年的课程引入了6.S081课程，感觉scheduel部分略微混乱，选择了2018年的课程进行实验。
-课程计划安排在<a href="https://pdos.csail.mit.edu/6.828/2018/schedule.html">官网</a>。
+<p>MIT 6.828是操作系统中最经典的一门课程。完成所有的lab就相当于完成了一个迷你的操作系统。由于2019年的课程引入了6.S081课程，感觉scheduel部分略微混乱，选择了2018年的课程进行实验。<br>
+课程计划安排在<a href="https://pdos.csail.mit.edu/6.828/2018/schedule.html">官网</a>。<br>
 具体准备过程参照了<a href="https://www.cnblogs.com/gatsby123/p/9746193.html">网上的博客</a> 。</p>
 <h2 id="实验代码克隆">实验代码克隆</h2>
 <p>下载实验框架代码。
 <code>git clone https://pdos.csail.mit.edu/6.828/2018/jos.git 6.828</code></p>
 <h2 id="编译工具链">编译工具链</h2>
-<p>编译工具链是一个工具集包括c编译器，汇编编译器，连接器。
-执行 <code>sudo apt-get install -y build-essential gdb</code> 进行下载。
-在64位机上还需安装32位支持库 <code>sudo apt-get install gcc-multilib</code>。
+<p>编译工具链是一个工具集包括c编译器，汇编编译器，连接器。<br>
+执行 <code>sudo apt-get install -y build-essential gdb</code> 进行下载。<br>
+在64位机上还需安装32位支持库 <code>sudo apt-get install gcc-multilib</code>。<br>
 执行 <code>gcc -m32 -print-libgcc-file-name</code> 验证是否成功。</p>
 <h2 id="qemu模拟器安装">QEMU模拟器安装</h2>
 <p>下载官方QEMU模拟器。
-<code>git clone https://github.com/mit-pdos/6.828-qemu.git qemu</code>
-执行 <code>./configure --disable-kvm --target-list=&quot;i386-softmmu x86_64-softmmu&quot;</code> 确定安装设置。
-执行 <code>make &amp;&amp; make install</code> 。</p>
+<code>git clone https://github.com/mit-pdos/6.828-qemu.git qemu</code><br>
+执行 <code>./configure --disable-kvm --target-list=&quot;i386-softmmu x86_64-softmmu&quot; --python=python2.7</code> 确定安装设置。<br>
+执行 <code>make &amp;&amp; make install</code> 。
+可能需要root权限。</p>
+<h2 id="测试">测试</h2>
+<p>进度实验框架代码文件夹。
+<code>cd 6.828</code><br>
+执行<code>make</code>，程序输出如下图。<br>
+<img src="img/6/828/prepare/Make_result.jpg" alt="Make Result"></p>
+<p>执行<code>make qemu-nox</code> (ssh 连接，未使用图像化显示界面) 或 <code>make qemu</code> (图形化远程连接) ，程序输出如下图。<br>
+<img src="img/6/828/prepare/qemu_result.png" alt="QEMU Result"></p>
+<p>详细情况可参考 <a href="https://pdos.csail.mit.edu/6.828/2018/labs/lab1/">https://pdos.csail.mit.edu/6.828/2018/labs/lab1/</a></p>
 
     </div>
 
