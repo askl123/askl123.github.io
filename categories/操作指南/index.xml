@@ -12,6 +12,15 @@
     
     
     <item>
+      <title>6.828 Lab1</title>
+      <link>http://localhost:1313/post/6.828/lab1/</link>
+      <pubDate>Mon, 10 Aug 2020 19:06:45 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/6.828/lab1/</guid>
+      <description>Lab1 实验过程与练习题 Ex.1&amp;amp;Ex.2 熟悉汇编语言与GDB调试 进入GDB模式的方法： 在第一个shell中执行make qemu-nox-gdb 在第二个shell中执行make gdb 6.8</description>
+    </item>
+    
+    <item>
       <title>操作指南</title>
       <link>http://localhost:1313/post/implement/</link>
       <pubDate>Mon, 10 Aug 2020 19:06:45 +0800</pubDate>
