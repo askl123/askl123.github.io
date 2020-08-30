@@ -49,7 +49,7 @@
 <meta itemprop="description" content="Lab1 实验过程与练习题 Ex.1&amp;Ex.2 熟悉汇编语言与GDB调试 进入GDB模式的方法： 在第一个shell中执行make qemu-nox-gdb 在第二个shell中执行make gdb 6.8">
 <meta itemprop="datePublished" content="2020-08-10T19:06:45&#43;08:00" />
 <meta itemprop="dateModified" content="2020-08-10T19:06:45&#43;08:00" />
-<meta itemprop="wordCount" content="987">
+<meta itemprop="wordCount" content="1237">
 
 
 
@@ -141,7 +141,13 @@
     <li><a href="#lab1-实验过程与练习题">Lab1 实验过程与练习题</a>
       <ul>
         <li><a href="#ex1ex2-熟悉汇编语言与gdb调试">Ex.1&amp;Ex.2 熟悉汇编语言与GDB调试</a></li>
-        <li><a href="#ex3">Ex.3</a></li>
+        <li><a href="#ex3-初探boot-loader引导程序">Ex.3 初探Boot Loader(引导程序)</a>
+          <ul>
+            <li><a href="#何时进入32位保护模式为什么需要进入32位保护模式">何时进入32位保护模式，为什么需要进入32位保护模式？</a></li>
+            <li><a href="#引导程序的最后一条指令是什么内核的第一条指令是什么内核的第一条指令的地址">引导程序的最后一条指令是什么，内核的第一条指令是什么，内核的第一条指令的地址？</a></li>
+            <li><a href="#引导程序怎么知道加载内核该读取几个扇区">引导程序怎么知道加载内核该读取几个扇区？</a></li>
+          </ul>
+        </li>
       </ul>
     </li>
   </ul>
@@ -188,7 +194,14 @@ BIOS加载引导程序（Boot Loader）到内存中，然后启动系统。
 </div><p><a href="https://www.jianshu.com/p/af9d7eee635e">加载地址为何时0x7c00</a>？<br>
 IBM最早的个人电脑IBM PC 5150用的是Intel最早的个人电脑芯片8088，当时，搭配的操作系统是86-DOS。这个操作系统需要的内存最少是32KB。内存地址从0x0000开始编号，32KB的内存就是0x0000～0x7FFF。
 8088芯片本身预留了地址空间0x0000～0x03FF，用来保存各种中断向量的储存位置。所以，内存只剩下0x0400～0x7FFF可以使用。为了把尽量多的连续内存留给操作系统，Boot Loader就被放到了内存地址的尾部。由于Boot Loader所在的这个扇区是512字节，另外Boot Loader数据和栈需要预留512字节。所以，Boot Loader加载位置是0x7c00，而且因为操作系统加载完成后Boot Loader不需要再使用，这部分内存之后操作系统是可以重复利用的。0x7FFF - 512 - 512 + 1 = 0x7C00</p>
-<h2 id="ex3">Ex.3</h2>
+<h2 id="ex3-初探boot-loader引导程序">Ex.3 初探Boot Loader(引导程序)</h2>
+<p>在0x7c00处设置断点<code>b *0x7c00</code>，观察程序运行过程，结合<code>boot/boot.S  boot/main.c  obj/boot/boot.asm</code>，回答下列问题。</p>
+<h3 id="何时进入32位保护模式为什么需要进入32位保护模式">何时进入32位保护模式，为什么需要进入32位保护模式？</h3>
+<p>At what point does the processor start executing 32-bit code? What exactly causes the switch from 16- to 32-bit mode?</p>
+<h3 id="引导程序的最后一条指令是什么内核的第一条指令是什么内核的第一条指令的地址">引导程序的最后一条指令是什么，内核的第一条指令是什么，内核的第一条指令的地址？</h3>
+<p>What is the last instruction of the boot loader executed, and what is the first instruction of the kernel it just loaded? Where is the first instruction of the kernel?</p>
+<h3 id="引导程序怎么知道加载内核该读取几个扇区">引导程序怎么知道加载内核该读取几个扇区？</h3>
+<p>How does the boot loader decide how many sectors it must read in order to fetch the entire kernel from disk? Where does it find this information?</p>
 
     </div>
 
