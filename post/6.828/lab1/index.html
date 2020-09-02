@@ -49,7 +49,7 @@
 <meta itemprop="description" content="Lab1 实验过程与练习题 Ex.1&amp;Ex.2 熟悉汇编语言与GDB调试 进入GDB模式的方法： 在第一个shell中执行make qemu-nox-gdb 在第二个shell中执行make gdb 6.8">
 <meta itemprop="datePublished" content="2020-08-10T19:06:45&#43;08:00" />
 <meta itemprop="dateModified" content="2020-08-10T19:06:45&#43;08:00" />
-<meta itemprop="wordCount" content="3376">
+<meta itemprop="wordCount" content="5646">
 
 
 
@@ -151,6 +151,19 @@
         <li><a href="#ex4-c语言指针练习">Ex.4 C语言指针练习</a></li>
         <li><a href="#ex5-elf文件格式链接地址与加载地址">Ex.5 ELF文件格式，链接地址与加载地址</a></li>
         <li><a href="#ex6-利用elf文件以及gdb验证内核的入口地址">Ex.6 利用ELF文件以及GDB验证内核的入口地址</a></li>
+        <li><a href="#ex7ex8-内核的初步映射过程">Ex.7&amp;Ex.8 内核的初步映射过程</a></li>
+        <li><a href="#ex8-print函数的理解">Ex.8 print函数的理解</a>
+          <ul>
+            <li><a href="#question-1">question 1:</a></li>
+            <li><a href="#question-2">question 2:</a></li>
+            <li><a href="#question-3">question 3:</a></li>
+            <li><a href="#question-4">question 4:</a></li>
+            <li><a href="#question-5">question 5:</a></li>
+          </ul>
+        </li>
+        <li><a href="#ex9-内核中栈的构成">Ex.9 内核中栈的构成</a></li>
+        <li><a href="#ex10-内核中递归过程的栈结构">Ex.10 内核中递归过程的栈结构</a></li>
+        <li><a href="#ex11ex12-利用栈现实函数信息与调用过程">Ex.11&amp;Ex.12 利用栈现实函数信息与调用过程</a></li>
       </ul>
     </li>
   </ul>
@@ -427,7 +440,283 @@ start address 0x0010000c
 0x10020:	0x00014328	0x00000000
 </code></pre></td></tr></table>
 </div>
+</div><h2 id="ex7ex8-内核的初步映射过程">Ex.7&amp;Ex.8 内核的初步映射过程</h2>
+<p>观察内核指令<code>movl %eax, %cr0</code>前后，0x00100000 以及 0xf0100000两处内存的数据情况。
+Before:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">(gdb) x/8x 0x100000
+0x100000:   0x1badb002  0x00000000  0xe4524ffe  0x7205c766
+0x100010:   0x34000004  0x0000b812  0x220f0011  0xc0200fd8
+(gdb) x/8x 0xf0100000
+0xf0100000 &lt;_start+4026531828&gt;: 0x00000000  0x00000000  0x00000000  0x00000000
+0xf0100010 &lt;entry+4&gt;:   0x00000000  0x00000000  0x00000000  0x00000000
+</code></pre></td></tr></table>
 </div>
+</div><p>After:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">(gdb) x/8x 0x100000
+0x100000:   0x1badb002  0x00000000  0xe4524ffe  0x7205c766
+0x100010:   0x34000004  0x0000b812  0x220f0011  0xc0200fd8
+(gdb) x/8x 0xf0100000
+0xf0100000 &lt;_start+4026531828&gt;: 0x1badb002  0x00000000  0xe4524ffe  0x7205c766
+0xf0100010 &lt;entry+4&gt;:   0x34000004  0x0000b812  0x220f0011  0xc0200fd8
+</code></pre></td></tr></table>
+</div>
+</div><p>由此可以发现，通过将<code>entrypgdir.c</code>中已经设置好高位地址的页目录项<code>entry_pgdir</code>载入cr0，可以将虚拟地址 0x00000000 到 0x00400000 以及 0xf0000000 到 0xf0400000 都被转为物理地址 0x00000000 到 0x00400000。<br>
+此外，<code>kern/entry.S</code>中的分页机制值得记录：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback"># Turn on paging.
+movl    %cr0, %eax
+orl $(CR0_PE|CR0_PG|CR0_WP), %eax
+movl    %eax, %cr0
+
+// Control Register flags  in inc/mmu.h
+#define CR0_PE      0x00000001  // Protection Enable
+#define CR0_MP      0x00000002  // Monitor coProcessor
+#define CR0_EM      0x00000004  // Emulation
+#define CR0_TS      0x00000008  // Task Switched
+#define CR0_ET      0x00000010  // Extension Type
+#define CR0_NE      0x00000020  // Numeric Errror
+#define CR0_WP      0x00010000  // Write Protect
+#define CR0_AM      0x00040000  // Alignment Mask
+#define CR0_NW      0x20000000  // Not Writethrough
+#define CR0_CD      0x40000000  // Cache Disable
+#define CR0_PG      0x80000000  // Paging
+</code></pre></td></tr></table>
+</div>
+</div><p>还有看到了一道思考题，感觉很不错，如果将kern/entry.S中的 <code>jmp *%eax</code> 改成 <code>call *%eax</code>，会报triple fault，为什么呢？<br>
+想想call和jmp的区别以及entry_pgdir在低地址和高地址的页表的映射权限有什么区别，报错的地址是 0x7be8，此时的esp是0x7bec，我想你应该知道原因了(因为call需要写入返回节点地址，而低物理地址0x7bec没有写入权限)。</p>
+<p>Ex.8 则需要考虑，如果地址映射不成功，则程序会在哪里出现问题？
+我认为与上面的思考类似，在<code>0x10002d:	jmp *%eax</code>指令出现故障。</p>
+<h2 id="ex8-print函数的理解">Ex.8 print函数的理解</h2>
+<p>补充%o在此不进行赘述。</p>
+<h3 id="question-1">question 1:</h3>
+<p>Explain the interface between printf.c and console.c. Specifically, what function does console.c export? How is this function used by printf.c?<br>
+答：console.c中提供了cputchar()函数</p>
+<h3 id="question-2">question 2:</h3>
+<p>Explain the following from console.c:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">if (crt_pos &gt;= CRT_SIZE) {
+     int i;
+     memmove(crt_buf, crt_buf + CRT_COLS, (CRT_SIZE - CRT_COLS) * sizeof(uint16_t));
+     for (i = CRT_SIZE - CRT_COLS; i &lt; CRT_SIZE; i++)
+           crt_buf[i] = 0x0700 | &#39; &#39;;
+     crt_pos -= CRT_COLS;
+}
+</code></pre></td></tr></table>
+</div>
+</div><p>答：将1-79行挪到0-78行，将79行的每个字符全部置为’   ’</p>
+<h3 id="question-3">question 3:</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">int x = 1, y = 3, z = 4;
+cprintf(“x %d, y %x, z %d\n”, x, y, z);
+</code></pre></td></tr></table>
+</div>
+</div><p>In the call to cprintf(), to what does fmt point? To what does ap point?<br>
+List (in order of execution) each call to cons_putc, va_arg, and vcprintf. For cons_putc, list its argument as well. For va_arg, list what ap points to before and after the call. For vcprintf list the values of its two arguments.<br>
+答：fmt是格式化输出字符串，ap是输出的数据</p>
+<h3 id="question-4">question 4:</h3>
+<p>Run the following code.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">unsigned int i = 0x00646c72;
+cprintf(&#34;H%x Wo%s&#34;, 57616, &amp;i);
+</code></pre></td></tr></table>
+</div>
+</div><p>运行后屏幕输出 <code>He110 World</code>。<br>
+原因：d(57601) = 0xe101,ASCII(0x72) = r,ASCII(0x6c)=l,ASCII(0x64)=d,ASCII(0x00) = ‘\0’ ,x86是little-endian，显示&rsquo;rld&rsquo;.</p>
+<h3 id="question-5">question 5:</h3>
+<p>In the following code<code>cprintf(&quot;x=%d y=%d&quot;, 3);</code>, what is going to be printed after ‘y=’? (note: the answer is not a specific value.) Why does this happen?<br>
+答：由于y未指定，所以会输出一个不确定的值。详情可见<code>man va_arg</code></p>
+<h2 id="ex9-内核中栈的构成">Ex.9 内核中栈的构成</h2>
+<p>Determine where the kernel initializes its stack, and exactly where in memory its stack is located. How does the kernel reserve space for its stack? And at which &ldquo;end&rdquo; of this reserved area is the stack pointer initialized to point to?</p>
+<p>首先在内核起始地址0x10000c处设置断点，执行几步后，可以发现<code>mov    $0xf0110000,%esp</code>，则栈的顶部（地址最大的位置）位于0xf0110000。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">(gdb) si
+=&gt; 0xf010002f &lt;relocated&gt;:	mov    $0x0,%ebp
+relocated () at kern/entry.S:74
+74		movl	$0x0,%ebp			# nuke frame pointer
+(gdb) si
+=&gt; 0xf0100034 &lt;relocated+5&gt;:	mov    $0xf0110000,%esp
+relocated () at kern/entry.S:77
+77		movl	$(bootstacktop),%esp
+</code></pre></td></tr></table>
+</div>
+</div><p>接着，查看<code>kern/entry.S</code>,<code>inc/memlayout.h</code>与<code>inc/mmu.h</code>，可以发现栈的大小为8*4kB。因此，栈位于0xf0110000到0xf0108000处。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">//kern/entry.S
+bootstack:
+    .space      KSTKSIZE
+
+//inc/memlayout.h
+#define KSTACKTOP   KERNBASE
+#define KSTKSIZE    (8*PGSIZE)          // size of a kernel stack
+#define KSTKGAP     (8*PGSIZE)          // size of a kernel stack guard
+
+//inc/mmu.h
+#define PGSIZE      4096        // bytes mapped by a page
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="ex10-内核中递归过程的栈结构">Ex.10 内核中递归过程的栈结构</h2>
+<p>To become familiar with the C calling conventions on the x86, find the address of the test_backtrace function in obj/kern/kernel.asm, set a breakpoint there, and examine what happens each time it gets called after the kernel starts. How many 32-bit words does each recursive nesting level of test_backtrace push on the stack, and what are those words?</p>
+<p>在未进入 test_backtrace前，锁定以下代码，并发现进入函数前的<code>%esp=0xf010ffe0</code>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">	test_backtrace(5);
+f01000c8:	c7 04 24 05 00 00 00 	movl   $0x5,(%esp)
+f01000cf:	e8 6c ff ff ff       	call   f0100040 &lt;test_backtrace&gt;
+f01000d4:	83 c4 10             	add    $0x10,%esp
+</code></pre></td></tr></table>
+</div>
+</div><p>进入函数<code>test_backtrace(5)</code>后<code>%esp=0xf010ffdc</code>,而在进入下一次递归<code>test_backtrace(4)</code>前，<code>%esp=0xf010ffd0</code>，因此可以观察这期间的栈内数据。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">0xf010ffc0: 0x00000004  0x00000005  0x00000000  0x00010094
+0xf010ffd0: 0x00010094  0x00010094  0xf010fff8  0xf01000d4
+</code></pre></td></tr></table>
+</div>
+</div><p>可先发现在递归前，入栈<code>return addr</code>,<code>old %ebp</code>,<code>old %ebx</code>。<br>
+接着三个数据是函数自己生成的缓冲区间。<br>
+然后<code>0xf010ffc4</code>与<code>0xf010ffc0</code>处的数据是为了cprintf准备的，<code>0x00000005</code>并未被覆盖掉，而字符串<code>&quot;entering test_backtrace %d\n&quot;</code>的首地址被<code>0x00000004</code>覆盖，是下次递归的函数参数。</p>
+<h2 id="ex11ex12-利用栈现实函数信息与调用过程">Ex.11&amp;Ex.12 利用栈现实函数信息与调用过程</h2>
+<p>Add a backtrace command to the kernel monitor, and extend your implementation of mon_backtrace to call debuginfo_eip and print a line for each stack frame of the form:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">K&gt; backtrace
+Stack backtrace:
+  ebp f010ff78  eip f01008ae  args 00000001 f010ff8c 00000000 f0110580 00000000
+         kern/monitor.c:143: monitor+106
+  ebp f010ffd8  eip f0100193  args 00000000 00001aac 00000660 00000000 00000000
+         kern/init.c:49: i386_init+59
+  ebp f010fff8  eip f010003d  args 00000000 00000000 0000ffff 10cf9a00 0000ffff
+         kern/entry.S:70: &lt;unknown&gt;+0
+K&gt; 
+</code></pre></td></tr></table>
+</div>
+</div><p>首先，要根据Ex10中的练习，利用%ebp与栈中存储结构，发现返回地址、函数参数以及前一段栈帧的%ebp。这期间可以尝试使用<code>inc/x86.h</code>中的<code>read_ebp()</code>函数，利用嵌入式汇编获取%ebp。<br>
+接着，在<code>kern/kdebug.c</code>中的<code>debuginfo_eip()</code>函数，可以利用%eip获取到对应指令所处的文件名、文件行数、函数名以及函数位置等。这里的具体方式我还没有特别理解（感觉不是重点，理解过程可以参考下面的几个步骤），大体上来说，就是利用很多<code>__STAB_*</code>标示出源文件与ELF的详细信息，并且保存与内存中，便于搜索使用，而<code>debuginfo_eip()</code>函数就是搜索的过程。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">look in the file kern/kernel.ld for __STAB_*
+run objdump -h obj/kern/kernel
+run objdump -G obj/kern/kernel
+run gcc -pipe -nostdinc -O2 -fno-builtin -I. -MD -Wall -Wno-format -DJOS_KERNEL -gstabs -c -S kern/init.c, and look at init.s.
+see if the bootloader loads the symbol table in memory as part of loading the kernel binary
+</code></pre></td></tr></table>
+</div>
+</div><p>最后，则是利用这些信息按照题目要求进行输出，根据提示可以使下面的小技巧，因为获取信息时可以得到函数名的长度。<code>printf(&quot;%.*s&quot;, length, string) prints at most length characters of string.</code></p>
+<p><img src="../figures/Lab1_result.png" alt="Lab1 Result" style="zoom:50%;" /></p>
+
     </div>
 
     <div class="post-copyright">
